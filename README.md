@@ -167,8 +167,8 @@ Instead of uniform synthetic arrivals, our environment uses **time-of-day demand
 | Requirement | Status | Implementation |
 |-------------|--------|----------------|
 | reset()/step/state API | ✅ | FastAPI endpoints for automated validation |
-| Multi-task framework | ✅ | 3 tiers: easy, medium, hard |
-| Deterministic graders | ✅ | grade_task_1/2/3() -> score [0, 1] |
+| Multi-task framework | ✅ | 3 tiers: task1, task2, task3 |
+| Deterministic graders | ✅ | grade_task1/2/3() -> score [0.05, 0.95] |
 | LLM inference support | ✅ | inference.py with OpenAI client |
 | START/STEP/END logging | ✅ | Mandatory structured tags for evaluation |
 | Docker containerization | ✅ | optimized Dockerfile with entry points |
@@ -185,7 +185,13 @@ Instead of uniform synthetic arrivals, our environment uses **time-of-day demand
 pip install -r requirements.txt
 
 # Run the grader
-python grader.py --model-path models/dqn_bus_v6_best.pt
+python grader.py --episodes 5
+
+# Run the inference script (LLM mode)
+export API_BASE_URL="https://router.huggingface.co/v1"
+export MODEL_NAME="Qwen/Qwen2.5-72B-Instruct"
+export HF_TOKEN="your_token_here"
+python inference.py --mode llm
 
 # Launch the dashboard + API server
 python server/app.py
