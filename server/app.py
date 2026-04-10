@@ -366,7 +366,7 @@ async def api_reset(req: Dict[str, str] = Body(default={})):
     Optionally accepts task_id to start a specific scenario.
     Returns observation and a session_id for future steps.
     """
-    task_id = req.get("task_id", "task_2")
+    task_id = req.get("task_id", "task2")
     # Support both episode_id (for tracking) and session_id (for state)
     session_id = req.get("session_id", req.get("episode_id"))
     
@@ -408,11 +408,6 @@ async def api_step(action_req: Dict[str, Any] = Body(...)):
     act_val = action_req.get("action", 0)
     obs, reward, done, info = env.step(act_val)
     
-    # Cleanup on completion
-    if done:
-        # s_store.close_session(session_id) 
-        pass # Keep session for potential grader review
-        
     return {
         "observation": obs.model_dump(),
         "reward": reward.model_dump(),
@@ -436,14 +431,11 @@ async def api_tasks():
 async def api_grader(req: Dict[str, Any] = Body(...)):
     """
     OpenEnv standard grader endpoint.
-    Expects JSON body with "task_id" and "action" (or "agent_policy").
-    Since this is a sequence-based environment, a single-action grader 
-    might just return a partial score or success flag.
-    For broader compliance, we also support "grade_task" requests.
+    Expects JSON body with "task_id" and "action".
     """
-    from grader import grade_task_1, grade_task_2, grade_task_3, grade_task_4, grade_task_5, grade_task_6, grade_task_7
+    from grader import grade_task1, grade_task2, grade_task3
     
-    task_id = req.get("task_id", "task_1")
+    task_id = req.get("task_id", "task1")
     
     # If the request wants to grade a specific task with a given action
     if "action" in req:
@@ -454,15 +446,11 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
             from sessions import store as s_store
             env = s_store.get_env(session_id)
             if not env:
-                # If session expired, create a quick one for this grade
                 session_id = s_store.create_session(task_id)
                 env = s_store.get_env(session_id)
         else:
-            # Fallback to a global one if no session provided
-            # (Matches friend's behavior for stateless grading)
             env = api_env
             
-        # Simple immediate reward grading for a single action
         obs, reward, done, info = env.step(action)
         # Normalize reward to (0, 1) range strictly
         score = float(np.clip((reward.value + 10) / 20.0, 0.05, 0.95))
@@ -474,27 +462,18 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
             "session_id": session_id
         }
     
-    # If the request is for a full task grade using the local model
+    # Full task grade
     graders = {
-        "task_1": grade_task_1,
-        "task1": grade_task_1,
-        "task_2": grade_task_2,
-        "task2": grade_task_2,
-        "task_3": grade_task_3,
-        "task3": grade_task_3,
-        "task_4": grade_task_4,
-        "task_5": grade_task_5,
-        "task_6": grade_task_6,
-        "task_7": grade_task_7,
+        "task1": grade_task1,
+        "task2": grade_task2,
+        "task3": grade_task3,
     }
     
     if task_id in graders:
-        # Load local agent for grading
         from agent import DQNAgent
         agent = DQNAgent.load(DEFAULT_MODEL)
         policy = lambda obs: agent.act(obs, greedy=True)
         
-        # Run grader (short episodes for API responsiveness)
         score = graders[task_id](policy, episodes=2)
         return {
             "task_id": task_id,
@@ -506,16 +485,12 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
 
 @api_app.get("/baseline")
 async def api_baseline():
-    """Return pre-computed baseline scores for comparison."""
+    """Return pre-computed baseline scores."""
     return {
-        "task_1": 0.50,
-        "task_2": 0.48,
-        "task_3": 0.45,
-        "task_4": 0.48,
-        "task_5": 0.42,
-        "task_6": 0.40,
-        "task_7": 0.38,
-        "description": "Baseline scores represent the performance of a simple greedy heuristic (Wait if queue > 5, else Move)."
+        "task1": 0.50,
+        "task2": 0.48,
+        "task3": 0.45,
+        "description": "Baseline performance of a simple greedy heuristic."
     }
 
 @api_app.get("/health")
@@ -825,12 +800,12 @@ def init_env(difficulty: str, compare: bool, agent_mode: str = "Dueling DDQN (Lo
     state.compare_mode = compare
     state.agent_mode = agent_mode
     
-    # Force map UI conceptual names directly to task IDs
+    # Map conceptual names to task IDs
     val = difficulty.lower().strip()
-    if val == "easy": task_key = "task_1"
-    elif val == "medium": task_key = "task_11"
-    elif val == "hard": task_key = "task_21"
-    else: task_key = val
+    if val == "easy": task_key = "task1"
+    elif val == "medium": task_key = "task2"
+    elif val == "hard": task_key = "task3"
+    else: task_key = val.replace("_", "")
     
     task = get_task(task_key)
     

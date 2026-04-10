@@ -17,13 +17,9 @@ from environment import BusRoutingEnv
 # Explicitly export task configurations for OpenEnv detection
 __all__ = [
     "TaskConfig",
-    "task_1",
-    "task_2", 
-    "task_3",
-    "task_4",
-    "task_5",
-    "task_6",
-    "task_7",
+    "task1",
+    "task2", 
+    "task3",
     "TASKS",
     "TASK_EASY",
     "TASK_MEDIUM", 
@@ -113,8 +109,8 @@ class TaskConfig:
 
 
 _TASK_EASY_TEMPLATE = TaskConfig(
-    name="task_easy",
-    description="Easy template",
+    name="task1",
+    description="Easy task",
     difficulty="easy",
     num_stops=5,
     num_buses=1,
@@ -137,8 +133,8 @@ _TASK_EASY_TEMPLATE = TaskConfig(
 )
 
 _TASK_MEDIUM_TEMPLATE = TaskConfig(
-    name="task_medium",
-    description="Medium template",
+    name="task2",
+    description="Medium task",
     difficulty="medium",
     num_stops=10,
     num_buses=1,
@@ -161,8 +157,8 @@ _TASK_MEDIUM_TEMPLATE = TaskConfig(
 )
 
 _TASK_HARD_TEMPLATE = TaskConfig(
-    name="task_hard",
-    description="Hard template",
+    name="task3",
+    description="Hard task",
     difficulty="hard",
     num_stops=12,
     num_buses=2,
@@ -186,97 +182,27 @@ _TASK_HARD_TEMPLATE = TaskConfig(
     demand_profile="peak_hour",
 )
 
-task_1 = copy.deepcopy(_TASK_EASY_TEMPLATE)
-task_1.name = "task_1"
-task_1.description = "Easy task 1"
-
-task_2 = copy.deepcopy(_TASK_MEDIUM_TEMPLATE)
-task_2.name = "task_2"
-task_2.description = "Medium task 2"
-
-task_3 = copy.deepcopy(_TASK_HARD_TEMPLATE)
-task_3.name = "task_3"
-task_3.description = "Hard task 3"
-
-task_4 = copy.deepcopy(_TASK_MEDIUM_TEMPLATE)
-task_4.name = "task_4"
-task_4.description = "Medium task 4 (Alternative Seed)"
-task_4.seed = 99
-
-task_5 = copy.deepcopy(_TASK_HARD_TEMPLATE)
-task_5.name = "task_5"
-task_5.description = "Hard task 5 (Extreme Peak)"
-task_5.passenger_arrival_rate = 2.5
-task_5.seed = 123
-
-task_6 = copy.deepcopy(_TASK_HARD_TEMPLATE)
-task_6.name = "task_6"
-task_6.description = "Very Hard - Large Network (20 stops)"
-task_6.num_stops = 20
-task_6.num_buses = 2
-task_6.max_steps = 250
-task_6.fuel_start = 75.0
-task_6.passenger_arrival_rate = 2.2
-task_6.seed = 456
-task_6.large_queue_threshold = 7
-task_6.wait_time_threshold = 2
-task_6.fuel_cost_move = 1.6
-task_6.fuel_cost_wait = 0.45
-task_6.new_stop_bonus = 1.6
-task_6.idle_camping_penalty = 1.2
-task_6.nearby_queue_ignore_penalty = 2.8
-task_6.repeat_stop_penalty = 0.9
-task_6.high_queue_reward_threshold = 4
-task_6.high_queue_visit_bonus = 3.5
-task_6.reward_clip = 18.0
-
-task_7 = copy.deepcopy(_TASK_HARD_TEMPLATE)
-task_7.name = "task_7"
-task_7.description = "Extreme - Mega Network (25 stops)"
-task_7.num_stops = 25
-task_7.num_buses = 2
-task_7.max_steps = 300
-task_7.fuel_start = 70.0
-task_7.passenger_arrival_rate = 2.8
-task_7.seed = 789
-task_7.large_queue_threshold = 6
-task_7.wait_time_threshold = 1
-task_7.fuel_cost_move = 1.8
-task_7.fuel_cost_wait = 0.5
-task_7.new_stop_bonus = 1.8
-task_7.idle_camping_penalty = 1.5
-task_7.nearby_queue_ignore_penalty = 3.0
-task_7.repeat_stop_penalty = 1.0
-task_7.high_queue_reward_threshold = 3
-task_7.high_queue_visit_bonus = 4.0
-task_7.reward_clip = 20.0
+task1 = copy.deepcopy(_TASK_EASY_TEMPLATE)
+task2 = copy.deepcopy(_TASK_MEDIUM_TEMPLATE)
+task3 = copy.deepcopy(_TASK_HARD_TEMPLATE)
 
 TASKS: Dict[str, TaskConfig] = {
-    "task_1": task_1,
-    "task_2": task_2,
-    "task_3": task_3,
-    "task_4": task_4,
-    "task_5": task_5,
-    "task_6": task_6,
-    "task_7": task_7,
+    "task1": task1,
+    "task2": task2,
+    "task3": task3,
 }
 
-TASK_EASY = task_1
-TASK_MEDIUM = task_2
-TASK_HARD = task_3
+TASK_EASY = task1
+TASK_MEDIUM = task2
+TASK_HARD = task3
 
 
 def get_task(name: str) -> TaskConfig:
-    key = name.lower().strip()
+    key = name.lower().strip().replace("_", "")
     legacy_map = {
-        "easy": "task_1",
-        "medium": "task_2",
-        "hard": "task_3",
-        "task1": "task_1",
-        "task2": "task_2",
-        "task3": "task_3",
-        "task_11": "task_2",
-        "task_21": "task_3",
+        "easy": "task1",
+        "medium": "task2",
+        "hard": "task3",
     }
     key = legacy_map.get(key, key)
     if key not in TASKS:

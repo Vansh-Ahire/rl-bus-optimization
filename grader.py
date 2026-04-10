@@ -35,13 +35,9 @@ from tasks import TASKS, TaskConfig
 
 # Explicitly export grader functions for OpenEnv detection
 __all__ = [
-    "grade_task_1",
-    "grade_task_2", 
-    "grade_task_3",
-    "grade_task_4",
-    "grade_task_5",
-    "grade_task_6",
-    "grade_task_7",
+    "grade_task1",
+    "grade_task2", 
+    "grade_task3",
     "grade_all_tasks",
 ]
 
@@ -301,140 +297,46 @@ def _grade_task(
 
 
 # ---------------------------------------------------------------------------
-# Per-task grading (5 Individual Functions)
+# Per-task grading
 # ---------------------------------------------------------------------------
 # We explicitly define these to ensure the OpenEnv evaluator can find them via reflection.
 
-__all__ = [
-    "grade_task_1",
-    "grade_task_2",
-    "grade_task_3",
-    "grade_task_4",
-    "grade_task_5",
-    "grade_task_6",
-    "grade_task_7",
-    "grade_all_tasks",
-    "random_policy",
-    "greedy_baseline_policy",
-    "highest_queue_first_policy",
-    "or_tools_greedy_policy",
-    "mpc_baseline_policy",
-]
+def grade_task1(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
+    """
+    Grade agent performance on task1 (Easy difficulty).
+    """
+    return float(_grade_task(TASKS["task1"], agent_policy, episodes)["score"])
 
 
-def grade_task_1(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
+def grade_task2(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
     """
-    Grade agent performance on task_1 (Easy difficulty).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0, 1) strictly
+    Grade agent performance on task2 (Medium difficulty).
     """
-    return float(_grade_task(TASKS["task_1"], agent_policy, episodes)["score"])
+    return float(_grade_task(TASKS["task2"], agent_policy, episodes)["score"])
 
 
-def grade_task_2(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
+def grade_task3(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
     """
-    Grade agent performance on task_2 (Medium difficulty).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0, 1) strictly
+    Grade agent performance on task3 (Hard difficulty).
     """
-    return float(_grade_task(TASKS["task_2"], agent_policy, episodes)["score"])
-
-
-def grade_task_3(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task_3 (Hard difficulty).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0, 1) strictly
-    """
-    return float(_grade_task(TASKS["task_3"], agent_policy, episodes)["score"])
-
-
-def grade_task_4(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task_4 (Medium difficulty, alternative seed).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0, 1) strictly
-    """
-    return float(_grade_task(TASKS["task_4"], agent_policy, episodes)["score"])
-
-
-def grade_task_5(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task_5 (Hard difficulty, extreme peak).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0.01, 0.99) — STRICTLY between 0 and 1
-    """
-    return float(_grade_task(TASKS["task_5"], agent_policy, episodes)["score"])
-
-
-def grade_task_6(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task_6 (Very Hard - Large Network, 20 stops).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0.01, 0.99) — STRICTLY between 0 and 1
-    """
-    return float(_grade_task(TASKS["task_6"], agent_policy, episodes)["score"])
-
-
-def grade_task_7(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task_7 (Extreme - Mega Network, 25 stops).
-    
-    Args:
-        agent_policy: Callable that takes observation and returns action
-        episodes: Number of evaluation episodes (default: 20)
-    
-    Returns:
-        float: Normalized score in range (0, 1) strictly
-    """
-    return float(_grade_task(TASKS["task_7"], agent_policy, episodes)["score"])
+    return float(_grade_task(TASKS["task3"], agent_policy, episodes)["score"])
 
 
 def grade_all_tasks(
     agent_policy: Callable[[np.ndarray], int],
     episodes: int = 20,
 ) -> Dict:
-    """Run explicit task graders and return combined results for all 7 tasks."""
+    """Run explicit task graders and return combined results for all 3 tasks."""
     results = {}
     total_score = 0.0
 
-    for i in range(1, 8):
-        task_id = f"task_{i}"
+    for i in range(1, 4):
+        task_id = f"task{i}"
         report = _grade_task(TASKS[task_id], agent_policy, episodes)
         results[task_id] = report
         total_score += report["score"]
 
-    aggregate = total_score / 7.0
+    aggregate = total_score / 3.0
 
     return {
         **results,
@@ -444,7 +346,7 @@ def grade_all_tasks(
 
 
 # ---------------------------------------------------------------------------
-# CLI entry-point  (backward-compatible with the original grader.py)
+# CLI entry-point
 # ---------------------------------------------------------------------------
 
 def main() -> None:
@@ -461,7 +363,7 @@ def main() -> None:
     report = grade_all_tasks(policy, episodes=args.episodes)
 
     print("=" * 60)
-    print("  OpenEnv Programmatic Grade Report (Enhanced)")
+    print("  OpenEnv Programmatic Grade Report")
     print("=" * 60)
 
     for task_key in report.get("task_ids", []):
@@ -477,17 +379,9 @@ def main() -> None:
             print(f"    t_statistic: {stats.get('t_statistic', 0.0):.4f}")
             print(f"    mean_improvement: {stats.get('mean_improvement', 0.0):.2f}%")
             print(f"    significance: {stats.get('statistical_significance', 'N/A')}")
-        
-        for section in ("rl_agent", "baseline_greedy", "baseline_highest_queue_first", "baseline_random", "baseline_or_tools", "baseline_mpc"):
-            if section in tr:
-                print(f"  [{section}]")
-                for k, v in tr[section].items():
-                    print(f"    {k}: {v:.4f}")
 
     print(f"\n{'=' * 60}")
-    print(f"  Aggregate score (0.01 - 0.99): {report['aggregate_score']:.4f}")
-    print(f"  Tasks evaluated: 7 (Uniformly weighted)")
-    print(f"  Baselines: Greedy, Random, HQF, OR-Tools, MPC")
+    print(f"  Aggregate score (0.05 - 0.95): {report['aggregate_score']:.4f}")
     print(f"{'=' * 60}")
 
 
