@@ -5,7 +5,7 @@ description: >
   learns to maximize passenger service efficiency while minimizing fuel
   consumption and wait times. Includes real-world GTFS-demand profiles.
 
-version: "1.2.0"
+version: "1.3.0"
 
 environment:
   class: environment.BusRoutingEnv
