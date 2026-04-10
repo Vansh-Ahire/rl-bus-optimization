@@ -1,0 +1,37 @@
+[project]
+name = "rl-bus-optimization"
+version = "1.1.0"
+description = "RL-based bus routing environment for optimising passenger service on a circular transit route."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.23",
+    "torch>=2.0",
+    "pydantic>=2.0",
+    "openai>=1.0",
+    "pyyaml>=6.0",
+    "gradio>=4.0",
+    "plotly>=5.0",
+    "pandas>=2.0",
+    "openenv-core>=0.2.0",
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["data", "server"]
+py-modules = [
+    "agent",
+    "environment",
+    "grader",
+    "inference",
+    "llm_evaluator",
+    "tasks",
+    "train",
+    "demonstrate",
+]

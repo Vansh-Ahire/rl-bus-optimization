@@ -1,0 +1,141 @@
+name: rl-bus-optimization
+description: >
+  A production-grade RL environment for bus route optimization.
+  Features a circular transit route where an agent (Dueling Double DQN)
+  learns to maximize passenger service efficiency while minimizing fuel
+  consumption and wait times. Includes real-world GTFS-demand profiles.
+
+version: "1.1.0"
+
+environment:
+  class: environment.BusRoutingEnv
+  actions: discrete(3)
+  observations: structured
+  reward: continuous
+
+tasks:
+  - id: "task_1"
+    name: "task_1"
+    difficulty: "easy"
+    description: "Easy variant 1"
+    python: "tasks:task_1"
+    grader: "grader:grade_task_1"
+  - id: "task1"
+    name: "task1"
+    difficulty: "easy"
+    description: "Easy variant 1 (alias)"
+    python: "tasks:task_1"
+    grader: "grader:grade_task_1"
+  - id: "task_2"
+    name: "task_2"
+    difficulty: "medium"
+    description: "Medium variant 2"
+    python: "tasks:task_2"
+    grader: "grader:grade_task_2"
+  - id: "task2"
+    name: "task2"
+    difficulty: "medium"
+    description: "Medium variant 2 (alias)"
+    python: "tasks:task_2"
+    grader: "grader:grade_task_2"
+  - id: "task_3"
+    name: "task_3"
+    difficulty: "hard"
+    description: "Hard variant 3"
+    python: "tasks:task_3"
+    grader: "grader:grade_task_3"
+  - id: "task3"
+    name: "task3"
+    difficulty: "hard"
+    description: "Hard variant 3 (alias)"
+    python: "tasks:task_3"
+    grader: "grader:grade_task_3"
+  - id: "task_4"
+    name: "task_4"
+    difficulty: "medium"
+    description: "Medium variant 4 (Alt Seed)"
+    python: "tasks:task_4"
+    grader: "grader:grade_task_4"
+  - id: "task_5"
+    name: "task_5"
+    difficulty: "hard"
+    description: "Hard variant 5 (Extreme)"
+    python: "tasks:task_5"
+    grader: "grader:grade_task_5"
+  - id: "task_6"
+    name: "task_6"
+    difficulty: "hard"
+    description: "Very Hard - Large Network (20 stops)"
+    python: "tasks:task_6"
+    grader: "grader:grade_task_6"
+  - id: "task_7"
+    name: "task_7"
+    difficulty: "hard"
+    description: "Extreme - Mega Network (25 stops)"
+    python: "tasks:task_7"
+    grader: "grader:grade_task_7"
+
+grading:
+  module: grader
+  per_task:
+    - function: grade_task_1
+      task_id: task_1
+    - function: grade_task_1
+      task_id: task1
+    - function: grade_task_2
+      task_id: task_2
+    - function: grade_task_2
+      task_id: task2
+    - function: grade_task_3
+      task_id: task_3
+    - function: grade_task_3
+      task_id: task3
+    - function: grade_task_4
+      task_id: task_4
+    - function: grade_task_5
+      task_id: task_5
+    - function: grade_task_6
+      task_id: task_6
+    - function: grade_task_7
+      task_id: task_7
+  aggregate: grade_all_tasks
+  score_range: [0.05, 0.95]
+
+inference:
+  script: inference.py
+  modes:
+    - llm    # OpenAI API (with mock fallback)
+    - dqn    # Pre-trained DQN checkpoint
+    - mock   # Deterministic heuristic
+
+models:
+  observation:
+    class: environment.Observation
+    fields:
+      - bus_position: int
+      - fuel: float
+      - onboard_passengers: int
+      - queue_current_stop: int
+      - queue_next_stop: int
+      - queue_next_next_stop: int
+      - time_step: int
+
+  action:
+    class: environment.Action
+    fields:
+      - action: int  # 0, 1, or 2
+
+  reward:
+    class: environment.Reward
+    fields:
+      - value: float
+      - passengers_picked: int
+      - fuel_used: float
+      - penalties_applied: list[str]
+
+tags:
+  - openenv
+  - reinforcement-learning
+  - bus-routing
+  - dqn
+  - transportation
