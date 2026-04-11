@@ -366,7 +366,7 @@ async def api_reset(req: Dict[str, str] = Body(default={})):
     Optionally accepts task_id to start a specific scenario.
     Returns observation and a session_id for future steps.
     """
-    task_id = req.get("task_id", "task2_1")
+    task_id = req.get("task_id", "task11") # Default to task11 (Medium variant 1)
     # Support both episode_id (for tracking) and session_id (for state)
     session_id = req.get("session_id", req.get("episode_id"))
     
@@ -435,7 +435,7 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
     """
     import grader
     
-    task_id = req.get("task_id", "task1_1")
+    task_id = req.get("task_id", "task1")
     
     # If the request wants to grade a specific task with a given action
     if "action" in req:
@@ -463,7 +463,7 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
         }
     
     # Full task grade
-    func_name = f"grade_{task_id.replace('-', '_')}"
+    func_name = f"grade_{task_id}"
     if hasattr(grader, func_name):
         from agent import DQNAgent
         agent = DQNAgent.load(DEFAULT_MODEL)
@@ -483,9 +483,9 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
 async def api_baseline():
     """Return pre-computed baseline scores."""
     return {
-        "task1_1": 0.50,
-        "task2_1": 0.48,
-        "task3_1": 0.45,
+        "task1": 0.50,
+        "task11": 0.48,
+        "task21": 0.45,
         "description": "Baseline performance of a simple greedy heuristic on primary variants."
     }
 

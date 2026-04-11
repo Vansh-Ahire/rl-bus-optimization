@@ -177,11 +177,11 @@ _TASK_HARD_TEMPLATE = TaskConfig(
 
 TASKS: Dict[str, TaskConfig] = {}
 
-# Generate 10 subtasks for each difficulty level
+# Generate 10 subtasks for each difficulty level (30 tasks total, no underscores)
 for i in range(1, 11):
-    # Easy subtasks
+    # Easy subtasks: task1 to task10
     t1 = copy.deepcopy(_TASK_EASY_TEMPLATE)
-    t1.name = f"task1_{i}"
+    t1.name = f"task{i}"
     t1.description = f"Easy variant {i}"
     t1.seed = 42 + i
     t1.passenger_arrival_rate += (i - 1) * 0.05
@@ -189,9 +189,9 @@ for i in range(1, 11):
     globals()[t1.name] = t1
     __all__.append(t1.name)
 
-    # Medium subtasks
+    # Medium subtasks: task11 to task20
     t2 = copy.deepcopy(_TASK_MEDIUM_TEMPLATE)
-    t2.name = f"task2_{i}"
+    t2.name = f"task{10 + i}"
     t2.description = f"Medium variant {i}"
     t2.seed = 42 + i
     t2.passenger_arrival_rate += (i - 1) * 0.1
@@ -199,9 +199,9 @@ for i in range(1, 11):
     globals()[t2.name] = t2
     __all__.append(t2.name)
 
-    # Hard subtasks
+    # Hard subtasks: task21 to task30
     t3 = copy.deepcopy(_TASK_HARD_TEMPLATE)
-    t3.name = f"task3_{i}"
+    t3.name = f"task{20 + i}"
     t3.description = f"Hard variant {i}"
     t3.seed = 42 + i
     t3.passenger_arrival_rate += (i - 1) * 0.15
@@ -210,36 +210,23 @@ for i in range(1, 11):
     __all__.append(t3.name)
 
 # Legacy aliases for compatibility
-TASK_EASY = TASKS["task1_1"]
-TASK_MEDIUM = TASKS["task2_1"]
-TASK_HARD = TASKS["task3_1"]
+TASK_EASY = TASKS["task1"]
+TASK_MEDIUM = TASKS["task11"]
+TASK_HARD = TASKS["task21"]
 
 def get_task(name: str) -> TaskConfig:
     key = name.lower().strip().replace("_", "")
     
     # Map legacy names to specific subtasks
     legacy_map = {
-        "easy": "task1_1",
-        "medium": "task2_1",
-        "hard": "task3_1",
-        "task1": "task1_1",
-        "task2": "task2_1",
-        "task3": "task3_1",
+        "easy": "task1",
+        "medium": "task11",
+        "hard": "task21",
     }
     
-    # If it's something like "task11" -> "task1_1"
-    if key in ["task11", "task1_1"]: return TASKS["task1_1"]
-    if key in ["task21", "task2_1"]: return TASKS["task2_1"]
-    if key in ["task31", "task3_1"]: return TASKS["task3_1"]
-    
-    # Generic mapping for task1_2, etc if they were sent as task12
-    for prefix in ["task1", "task2", "task3"]:
-        if key.startswith(prefix) and len(key) > len(prefix):
-            suffix = key[len(prefix):]
-            if suffix.isdigit():
-                possible_key = f"{prefix}_{suffix}"
-                if possible_key in TASKS:
-                    return TASKS[possible_key]
+    # Handle task1, task2, etc. directly
+    if key in TASKS:
+        return TASKS[key]
 
     key = legacy_map.get(key, name.lower().strip())
     if key not in TASKS:

@@ -265,18 +265,17 @@ def _grade_task(
 # Per-task grading functions
 # ---------------------------------------------------------------------------
 
-# Dynamically generate 30 grading functions
-for i in range(1, 4):
-    for j in range(1, 11):
-        task_name = f"task{i}_{j}"
-        def make_grader(t_name):
-            def grader(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-                return float(_grade_task(TASKS[t_name], agent_policy, episodes)["score"])
-            return grader
-        
-        func_name = f"grade_{task_name}"
-        globals()[func_name] = make_grader(task_name)
-        __all__.append(func_name)
+# Dynamically generate 30 grading functions (task1 to task30)
+for i in range(1, 31):
+    task_name = f"task{i}"
+    def make_grader(t_name):
+        def grader(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
+            return float(_grade_task(TASKS[t_name], agent_policy, episodes)["score"])
+        return grader
+    
+    func_name = f"grade_{task_name}"
+    globals()[func_name] = make_grader(task_name)
+    __all__.append(func_name)
 
 def grade_all_tasks(
     agent_policy: Callable[[np.ndarray], int],
@@ -286,12 +285,11 @@ def grade_all_tasks(
     results = {}
     total_score = 0.0
 
-    for i in range(1, 4):
-        for j in range(1, 11):
-            task_id = f"task{i}_{j}"
-            report = _grade_task(TASKS[task_id], agent_policy, episodes)
-            results[task_id] = report
-            total_score += report["score"]
+    for i in range(1, 31):
+        task_id = f"task{i}"
+        report = _grade_task(TASKS[task_id], agent_policy, episodes)
+        results[task_id] = report
+        total_score += report["score"]
 
     aggregate = total_score / 30.0
 

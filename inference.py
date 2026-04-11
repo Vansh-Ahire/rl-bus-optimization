@@ -140,7 +140,7 @@ def run_inference(mode: str, model_path: Optional[str], episodes: int) -> None:
     else:
         agent = MockLLMAgent()
 
-    task_ids = ["task1", "task2", "task3"]
+    task_ids = ["task1", "task11", "task21"] # Easy, Medium, Hard baseline variants
     all_rewards = []
     total_steps = 0
     task_scores = []
