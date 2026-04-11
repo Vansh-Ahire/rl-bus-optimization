@@ -4,7 +4,11 @@ Test that openenv.yaml grader paths can be resolved correctly.
 
 import yaml
 import importlib
+import sys
+import os
 
+# Ensure root directory is in sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 def test_openenv_yaml():
     """Verify openenv.yaml grader configuration."""
@@ -27,7 +31,7 @@ def test_openenv_yaml():
         
         if grader_path:
             graders_found += 1
-            print(f"  ✓ Task '{task_id}' has grader: {grader_path}")
+            print(f"  [OK] Task '{task_id}' has grader: {grader_path}")
             
             # Try to resolve the grader path
             try:
@@ -36,19 +40,19 @@ def test_openenv_yaml():
                 func = getattr(module, func_name)
                 
                 if callable(func):
-                    print(f"    ✓ Successfully resolved {grader_path}")
+                    print(f"    [OK] Successfully resolved {grader_path}")
                 else:
-                    print(f"    ✗ {grader_path} is not callable")
+                    print(f"    [FAIL] {grader_path} is not callable")
             except Exception as e:
-                print(f"    ✗ Failed to resolve {grader_path}: {e}")
+                print(f"    [FAIL] Failed to resolve {grader_path}: {e}")
         else:
-            print(f"  ✗ Task '{task_id}' has no grader field")
+            print(f"  [FAIL] Task '{task_id}' has no grader field")
     
     # Check grading section
     grading = config.get("grading", {})
     per_task = grading.get("per_task", [])
     
-    print(f"\n✓ Found {len(per_task)} per-task graders in grading section")
+    print(f"\n[OK] Found {len(per_task)} per-task graders in grading section")
     
     for entry in per_task:
         func_name = entry.get("function")
@@ -58,10 +62,10 @@ def test_openenv_yaml():
     # Final check
     print("\n" + "="*60)
     if graders_found >= 3:
-        print(f"✓ PASS: Found {graders_found} tasks with graders (minimum 3 required)")
+        print(f"[OK] PASS: Found {graders_found} tasks with graders (minimum 3 required)")
         return True
     else:
-        print(f"✗ FAIL: Only {graders_found} tasks with graders (minimum 3 required)")
+        print(f"[FAIL] FAIL: Only {graders_found} tasks with graders (minimum 3 required)")
         return False
 
 
