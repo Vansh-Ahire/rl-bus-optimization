@@ -14,34 +14,258 @@ environment:
   reward: continuous
 
 tasks:
-  - id: "task1"
-    name: "task1"
+  # Easy Tasks (task1_1 to task1_10)
+  - id: "task1_1"
+    name: "task1_1"
     difficulty: "easy"
     description: "Easy variant 1"
-    python: "tasks:task1"
-    grader: "grader:grade_task1"
-  - id: "task2"
-    name: "task2"
+    python: "tasks:task1_1"
+    grader: "grader:grade_task1_1"
+  - id: "task1_2"
+    name: "task1_2"
+    difficulty: "easy"
+    description: "Easy variant 2"
+    python: "tasks:task1_2"
+    grader: "grader:grade_task1_2"
+  - id: "task1_3"
+    name: "task1_3"
+    difficulty: "easy"
+    description: "Easy variant 3"
+    python: "tasks:task1_3"
+    grader: "grader:grade_task1_3"
+  - id: "task1_4"
+    name: "task1_4"
+    difficulty: "easy"
+    description: "Easy variant 4"
+    python: "tasks:task1_4"
+    grader: "grader:grade_task1_4"
+  - id: "task1_5"
+    name: "task1_5"
+    difficulty: "easy"
+    description: "Easy variant 5"
+    python: "tasks:task1_5"
+    grader: "grader:grade_task1_5"
+  - id: "task1_6"
+    name: "task1_6"
+    difficulty: "easy"
+    description: "Easy variant 6"
+    python: "tasks:task1_6"
+    grader: "grader:grade_task1_6"
+  - id: "task1_7"
+    name: "task1_7"
+    difficulty: "easy"
+    description: "Easy variant 7"
+    python: "tasks:task1_7"
+    grader: "grader:grade_task1_7"
+  - id: "task1_8"
+    name: "task1_8"
+    difficulty: "easy"
+    description: "Easy variant 8"
+    python: "tasks:task1_8"
+    grader: "grader:grade_task1_8"
+  - id: "task1_9"
+    name: "task1_9"
+    difficulty: "easy"
+    description: "Easy variant 9"
+    python: "tasks:task1_9"
+    grader: "grader:grade_task1_9"
+  - id: "task1_10"
+    name: "task1_10"
+    difficulty: "easy"
+    description: "Easy variant 10"
+    python: "tasks:task1_10"
+    grader: "grader:grade_task1_10"
+
+  # Medium Tasks (task2_1 to task2_10)
+  - id: "task2_1"
+    name: "task2_1"
+    difficulty: "medium"
+    description: "Medium variant 1"
+    python: "tasks:task2_1"
+    grader: "grader:grade_task2_1"
+  - id: "task2_2"
+    name: "task2_2"
     difficulty: "medium"
     description: "Medium variant 2"
-    python: "tasks:task2"
-    grader: "grader:grade_task2"
-  - id: "task3"
-    name: "task3"
+    python: "tasks:task2_2"
+    grader: "grader:grade_task2_2"
+  - id: "task2_3"
+    name: "task2_3"
+    difficulty: "medium"
+    description: "Medium variant 3"
+    python: "tasks:task2_3"
+    grader: "grader:grade_task2_3"
+  - id: "task2_4"
+    name: "task2_4"
+    difficulty: "medium"
+    description: "Medium variant 4"
+    python: "tasks:task2_4"
+    grader: "grader:grade_task2_4"
+  - id: "task2_5"
+    name: "task2_5"
+    difficulty: "medium"
+    description: "Medium variant 5"
+    python: "tasks:task2_5"
+    grader: "grader:grade_task2_5"
+  - id: "task2_6"
+    name: "task2_6"
+    difficulty: "medium"
+    description: "Medium variant 6"
+    python: "tasks:task2_6"
+    grader: "grader:grade_task2_6"
+  - id: "task2_7"
+    name: "task2_7"
+    difficulty: "medium"
+    description: "Medium variant 7"
+    python: "tasks:task2_7"
+    grader: "grader:grade_task2_7"
+  - id: "task2_8"
+    name: "task2_8"
+    difficulty: "medium"
+    description: "Medium variant 8"
+    python: "tasks:task2_8"
+    grader: "grader:grade_task2_8"
+  - id: "task2_9"
+    name: "task2_9"
+    difficulty: "medium"
+    description: "Medium variant 9"
+    python: "tasks:task2_9"
+    grader: "grader:grade_task2_9"
+  - id: "task2_10"
+    name: "task2_10"
+    difficulty: "medium"
+    description: "Medium variant 10"
+    python: "tasks:task2_10"
+    grader: "grader:grade_task2_10"
+
+  # Hard Tasks (task3_1 to task3_10)
+  - id: "task3_1"
+    name: "task3_1"
+    difficulty: "hard"
+    description: "Hard variant 1"
+    python: "tasks:task3_1"
+    grader: "grader:grade_task3_1"
+  - id: "task3_2"
+    name: "task3_2"
+    difficulty: "hard"
+    description: "Hard variant 2"
+    python: "tasks:task3_2"
+    grader: "grader:grade_task3_2"
+  - id: "task3_3"
+    name: "task3_3"
     difficulty: "hard"
     description: "Hard variant 3"
-    python: "tasks:task3"
-    grader: "grader:grade_task3"
+    python: "tasks:task3_3"
+    grader: "grader:grade_task3_3"
+  - id: "task3_4"
+    name: "task3_4"
+    difficulty: "hard"
+    description: "Hard variant 4"
+    python: "tasks:task3_4"
+    grader: "grader:grade_task3_4"
+  - id: "task3_5"
+    name: "task3_5"
+    difficulty: "hard"
+    description: "Hard variant 5"
+    python: "tasks:task3_5"
+    grader: "grader:grade_task3_5"
+  - id: "task3_6"
+    name: "task3_6"
+    difficulty: "hard"
+    description: "Hard variant 6"
+    python: "tasks:task3_6"
+    grader: "grader:grade_task3_6"
+  - id: "task3_7"
+    name: "task3_7"
+    difficulty: "hard"
+    description: "Hard variant 7"
+    python: "tasks:task3_7"
+    grader: "grader:grade_task3_7"
+  - id: "task3_8"
+    name: "task3_8"
+    difficulty: "hard"
+    description: "Hard variant 8"
+    python: "tasks:task3_8"
+    grader: "grader:grade_task3_8"
+  - id: "task3_9"
+    name: "task3_9"
+    difficulty: "hard"
+    description: "Hard variant 9"
+    python: "tasks:task3_9"
+    grader: "grader:grade_task3_9"
+  - id: "task3_10"
+    name: "task3_10"
+    difficulty: "hard"
+    description: "Hard variant 10"
+    python: "tasks:task3_10"
+    grader: "grader:grade_task3_10"
 
 grading:
   module: grader
   per_task:
-    - function: grade_task1
-      task_id: task1
-    - function: grade_task2
-      task_id: task2
-    - function: grade_task3
-      task_id: task3
+    # Easy
+    - function: grade_task1_1
+      task_id: task1_1
+    - function: grade_task1_2
+      task_id: task1_2
+    - function: grade_task1_3
+      task_id: task1_3
+    - function: grade_task1_4
+      task_id: task1_4
+    - function: grade_task1_5
+      task_id: task1_5
+    - function: grade_task1_6
+      task_id: task1_6
+    - function: grade_task1_7
+      task_id: task1_7
+    - function: grade_task1_8
+      task_id: task1_8
+    - function: grade_task1_9
+      task_id: task1_9
+    - function: grade_task1_10
+      task_id: task1_10
+    # Medium
+    - function: grade_task2_1
+      task_id: task2_1
+    - function: grade_task2_2
+      task_id: task2_2
+    - function: grade_task2_3
+      task_id: task2_3
+    - function: grade_task2_4
+      task_id: task2_4
+    - function: grade_task2_5
+      task_id: task2_5
+    - function: grade_task2_6
+      task_id: task2_6
+    - function: grade_task2_7
+      task_id: task2_7
+    - function: grade_task2_8
+      task_id: task2_8
+    - function: grade_task2_9
+      task_id: task2_9
+    - function: grade_task2_10
+      task_id: task2_10
+    # Hard
+    - function: grade_task3_1
+      task_id: task3_1
+    - function: grade_task3_2
+      task_id: task3_2
+    - function: grade_task3_3
+      task_id: task3_3
+    - function: grade_task3_4
+      task_id: task3_4
+    - function: grade_task3_5
+      task_id: task3_5
+    - function: grade_task3_6
+      task_id: task3_6
+    - function: grade_task3_7
+      task_id: task3_7
+    - function: grade_task3_8
+      task_id: task3_8
+    - function: grade_task3_9
+      task_id: task3_9
+    - function: grade_task3_10
+      task_id: task3_10
   aggregate: grade_all_tasks
   score_range: [0.05, 0.95]
 

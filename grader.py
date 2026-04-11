@@ -1,19 +1,13 @@
 """
 Deterministic per-task graders for the OpenEnv bus routing environment.
 
-Each ``grade_task_X`` function:
+Each ``grade_taskX_Y`` function:
     1. Creates the task environment from ``tasks.py``.
     2. Runs the agent over multiple episodes.
     3. Compares against heuristic baselines.
     4. Returns a normalised **score in [0.0, 1.0]**.
 
-Scoring considers:
-    • Average passenger wait time
-    • Cumulative reward
-    • Fuel efficiency (pickups per fuel unit)
-    • Stop coverage (fraction of stops visited)
-    • Route balance (normalised entropy of visit distribution)
-    • Anti-camping (penalises over-concentration at a single stop)
+Now expanded to include 30 tasks total.
 """
 
 from __future__ import annotations
@@ -35,9 +29,6 @@ from tasks import TASKS, TaskConfig
 
 # Explicitly export grader functions for OpenEnv detection
 __all__ = [
-    "grade_task1",
-    "grade_task2", 
-    "grade_task3",
     "grade_all_tasks",
 ]
 
@@ -206,14 +197,6 @@ def _add_statistical_tests(
 def _score_0_1(metrics: Dict[str, float], baseline: Dict[str, float]) -> float:
     """
     Weighted score normalised to **[0.0, 1.0]**.
-
-    Weight distribution:
-        wait-time improvement  30 %
-        reward improvement     35 %
-        fuel efficiency         5 %
-        stop coverage          15 %
-        route balance          10 %
-        anti-camping            5 %
     """
     wait_impr = (baseline["avg_wait_time"] - metrics["avg_wait_time"]) / max(
         baseline["avg_wait_time"], 1e-6
@@ -254,28 +237,14 @@ def _grade_task(
     agent_policy: Callable[[np.ndarray], int],
     episodes: int = 20,
 ) -> Dict:
-    """Generic grader — used by all grade_task_X functions with statistical tests and multiple baselines."""
+    """Generic grader."""
     env = task_cfg.build_env()
 
     rl_metrics = _run_eval(env, policy=agent_policy, episodes=episodes)
     baseline_metrics = _run_eval(
         env, policy=greedy_baseline_policy, episodes=episodes
     )
-    random_metrics = _run_eval(
-        env,
-        policy=lambda obs: random_policy(obs, env.num_actions),
-        episodes=episodes,
-    )
-    hqf_metrics = _run_eval(
-        env, policy=highest_queue_first_policy, episodes=episodes
-    )
-    or_tools_metrics = _run_eval(
-        env, policy=or_tools_greedy_policy, episodes=episodes
-    )
-    mpc_metrics = _run_eval(
-        env, policy=mpc_baseline_policy, episodes=episodes
-    )
-
+    
     stats_results = _add_statistical_tests(
         env, agent_policy, greedy_baseline_policy, episodes=episodes
     )
@@ -288,55 +257,43 @@ def _grade_task(
         "score": score,
         "rl_agent": rl_metrics,
         "baseline_greedy": baseline_metrics,
-        "baseline_random": random_metrics,
-        "baseline_highest_queue_first": hqf_metrics,
-        "baseline_or_tools": or_tools_metrics,
-        "baseline_mpc": mpc_metrics,
         "statistical_tests": stats_results,
     }
 
 
 # ---------------------------------------------------------------------------
-# Per-task grading
+# Per-task grading functions
 # ---------------------------------------------------------------------------
-# We explicitly define these to ensure the OpenEnv evaluator can find them via reflection.
 
-def grade_task1(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task1 (Easy difficulty).
-    """
-    return float(_grade_task(TASKS["task1"], agent_policy, episodes)["score"])
-
-
-def grade_task2(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task2 (Medium difficulty).
-    """
-    return float(_grade_task(TASKS["task2"], agent_policy, episodes)["score"])
-
-
-def grade_task3(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
-    """
-    Grade agent performance on task3 (Hard difficulty).
-    """
-    return float(_grade_task(TASKS["task3"], agent_policy, episodes)["score"])
-
+# Dynamically generate 30 grading functions
+for i in range(1, 4):
+    for j in range(1, 11):
+        task_name = f"task{i}_{j}"
+        def make_grader(t_name):
+            def grader(agent_policy: Callable[[np.ndarray], int], episodes: int = 20) -> float:
+                return float(_grade_task(TASKS[t_name], agent_policy, episodes)["score"])
+            return grader
+        
+        func_name = f"grade_{task_name}"
+        globals()[func_name] = make_grader(task_name)
+        __all__.append(func_name)
 
 def grade_all_tasks(
     agent_policy: Callable[[np.ndarray], int],
     episodes: int = 20,
 ) -> Dict:
-    """Run explicit task graders and return combined results for all 3 tasks."""
+    """Run explicit task graders and return combined results for all 30 tasks."""
     results = {}
     total_score = 0.0
 
     for i in range(1, 4):
-        task_id = f"task{i}"
-        report = _grade_task(TASKS[task_id], agent_policy, episodes)
-        results[task_id] = report
-        total_score += report["score"]
+        for j in range(1, 11):
+            task_id = f"task{i}_{j}"
+            report = _grade_task(TASKS[task_id], agent_policy, episodes)
+            results[task_id] = report
+            total_score += report["score"]
 
-    aggregate = total_score / 3.0
+    aggregate = total_score / 30.0
 
     return {
         **results,
@@ -353,7 +310,7 @@ def main() -> None:
     from agent import DQNAgent
 
     p = argparse.ArgumentParser(description="OpenEnv Bus Routing — Programmatic Grader")
-    p.add_argument("--model-path", type=str, default="models/dqn_bus.pt")
+    p.add_argument("--model-path", type=str, default="models/dqn_bus_v6_best.pt")
     p.add_argument("--episodes", type=int, default=int(os.getenv("MAX_EVAL_EPISODES", 5)))
     args = p.parse_args()
 
@@ -363,22 +320,12 @@ def main() -> None:
     report = grade_all_tasks(policy, episodes=args.episodes)
 
     print("=" * 60)
-    print("  OpenEnv Programmatic Grade Report")
+    print("  OpenEnv Programmatic Grade Report (30 Tasks)")
     print("=" * 60)
 
-    for task_key in report.get("task_ids", []):
+    for task_key in sorted(report.get("task_ids", [])):
         tr = report[task_key]
-        print(f"\n{'-' * 50}")
         print(f"  {tr['task']} ({tr['difficulty']})  -  score: {tr['score']:.4f}")
-        print(f"{'-' * 50}")
-        
-        stats = tr.get("statistical_tests", {})
-        if stats:
-            print(f"  [Statistical Tests]")
-            print(f"    p_value: {stats.get('p_value', 0.0):.4f}")
-            print(f"    t_statistic: {stats.get('t_statistic', 0.0):.4f}")
-            print(f"    mean_improvement: {stats.get('mean_improvement', 0.0):.2f}%")
-            print(f"    significance: {stats.get('statistical_significance', 'N/A')}")
 
     print(f"\n{'=' * 60}")
     print(f"  Aggregate score (0.05 - 0.95): {report['aggregate_score']:.4f}")

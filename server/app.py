@@ -366,7 +366,7 @@ async def api_reset(req: Dict[str, str] = Body(default={})):
     Optionally accepts task_id to start a specific scenario.
     Returns observation and a session_id for future steps.
     """
-    task_id = req.get("task_id", "task2")
+    task_id = req.get("task_id", "task2_1")
     # Support both episode_id (for tracking) and session_id (for state)
     session_id = req.get("session_id", req.get("episode_id"))
     
@@ -433,9 +433,9 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
     OpenEnv standard grader endpoint.
     Expects JSON body with "task_id" and "action".
     """
-    from grader import grade_task1, grade_task2, grade_task3
+    import grader
     
-    task_id = req.get("task_id", "task1")
+    task_id = req.get("task_id", "task1_1")
     
     # If the request wants to grade a specific task with a given action
     if "action" in req:
@@ -463,18 +463,14 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
         }
     
     # Full task grade
-    graders = {
-        "task1": grade_task1,
-        "task2": grade_task2,
-        "task3": grade_task3,
-    }
-    
-    if task_id in graders:
+    func_name = f"grade_{task_id.replace('-', '_')}"
+    if hasattr(grader, func_name):
         from agent import DQNAgent
         agent = DQNAgent.load(DEFAULT_MODEL)
         policy = lambda obs: agent.act(obs, greedy=True)
         
-        score = graders[task_id](policy, episodes=2)
+        grade_func = getattr(grader, func_name)
+        score = grade_func(policy, episodes=2)
         return {
             "task_id": task_id,
             "score": float(np.clip(score, 0.05, 0.95)),
@@ -487,10 +483,10 @@ async def api_grader(req: Dict[str, Any] = Body(...)):
 async def api_baseline():
     """Return pre-computed baseline scores."""
     return {
-        "task1": 0.50,
-        "task2": 0.48,
-        "task3": 0.45,
-        "description": "Baseline performance of a simple greedy heuristic."
+        "task1_1": 0.50,
+        "task2_1": 0.48,
+        "task3_1": 0.45,
+        "description": "Baseline performance of a simple greedy heuristic on primary variants."
     }
 
 @api_app.get("/health")
@@ -802,10 +798,10 @@ def init_env(difficulty: str, compare: bool, agent_mode: str = "Dueling DDQN (Lo
     
     # Map conceptual names to task IDs
     val = difficulty.lower().strip()
-    if val == "easy": task_key = "task1"
-    elif val == "medium": task_key = "task2"
-    elif val == "hard": task_key = "task3"
-    else: task_key = val.replace("_", "")
+    if val == "easy": task_key = "task1_1"
+    elif val == "medium": task_key = "task2_1"
+    elif val == "hard": task_key = "task3_1"
+    else: task_key = val.replace("-", "_")
     
     task = get_task(task_key)
     
